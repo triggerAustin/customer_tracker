@@ -1,0 +1,22 @@
+<form hx-post="{% url 'policies:policy_type_quick_add' %}"
+      hx-target="#policy-type-add-area"
+      hx-swap="innerHTML"
+      class="quick-add-form">
+    {% csrf_token %}
+    <input type="hidden" name="context" value="{{ context_source }}">
+    <div class="field">
+        <label for="qa_name">New type name</label>
+        {{ form.name }}
+        {% if form.name.errors %}
+        <ul class="errorlist">{% for error in form.name.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        {% endif %}
+    </div>
+    <div class="field">
+        <label for="qa_description">Description</label>
+        {{ form.description }}
+    </div>
+    <div class="quick-add-actions">
+        <button type="submit" class="btn btn-secondary btn-sm">Save Type</button>
+        <button type="button" class="btn btn-sm" onclick="document.getElementById('policy-type-add-area').innerHTML=''">Cancel</button>
+    </div>
+</form>

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "edit" %}Edit {{ policy.policy_number }}{% else %}New Policy{% endif %} · Customer Tracker{% endblock %}
+{% block nav_policies %}active{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'policies:policy_list' %}">Policies</a>
+    {% if mode == "edit" %} / {{ policy.policy_number }}{% endif %} / {% if mode == "edit" %}Edit{% else %}New{% endif %}
+</div>
+
+<div class="page-header">
+    <h2>{% if mode == "edit" %}Edit Policy{% else %}New Policy{% endif %}</h2>
+</div>
+
+<div class="form-card">
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="form-grid">
+            {% for field in form %}
+            {% if field.name == "policy_type" %}
+            <div class="field" id="policy-type-field">
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                    <a href="#"
+                       class="quick-add-link"
+                       hx-get="{% url 'policies:policy_type_quick_add' %}?context=form"
+                       hx-target="#policy-type-add-area"
+                       hx-swap="innerHTML">+ New Type</a>
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                <ul class="errorlist">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                {% endif %}
+                <div id="policy-type-add-area"></div>
+            </div>
+            {% else %}
+            <div class="field {% if field.name == 'notes' %}full{% endif %}">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <ul class="errorlist">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    {% if mode == "edit" %}Save Changes{% else %}Create Policy{% endif %}
+                </button>
+                <a href="{% if mode == 'edit' %}{% url 'policies:policy_detail' policy.pk %}{% else %}{% url 'policies:policy_list' %}{% endif %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

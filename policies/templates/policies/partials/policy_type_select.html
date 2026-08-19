@@ -1,0 +1,5 @@
+<select name="policy_type" id="id_policy_type" hx-swap-oob="true">
+    {% for pt in policy_types %}
+    <option value="{{ pt.pk }}" {% if pt.pk == selected_pk %}selected{% endif %}>{{ pt.name }}</option>
+    {% endfor %}
+</select>

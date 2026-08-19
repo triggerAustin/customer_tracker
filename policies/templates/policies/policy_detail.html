@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}{{ policy.policy_number }} · Customer Tracker{% endblock %}
+{% block nav_policies %}active{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'policies:policy_list' %}">Policies</a> / {{ policy.policy_number }}
+</div>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+</ul>
+{% endif %}
+
+<div class="page-header">
+    <div>
+        <h2>{{ policy.policy_number }}</h2>
+        <div class="subtitle">{{ policy.customer.full_name }} &middot; {{ policy.policy_type.name }}</div>
+    </div>
+    <a href="{% url 'policies:policy_edit' policy.pk %}" class="btn btn-secondary">Edit Policy</a>
+</div>
+
+<div class="detail-grid">
+    <div>
+        <div class="card">
+            <h3>Payments</h3>
+            {% if payments %}
+            <table class="section-table">
+                <thead>
+                    <tr><th>Date</th><th>Amount</th><th>Method</th><th>Period</th></tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td class="mono">{{ payment.date_paid|date:"d M Y" }}</td>
+                        <td class="mono">KES {{ payment.amount_paid|floatformat:2 }}</td>
+                        <td>{{ payment.get_payment_method_display }}</td>
+                        <td>{{ payment.period_covered|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="subtitle">No payments recorded yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3>Premium Schedule</h3>
+            {% if schedule %}
+            <table class="section-table">
+                <thead>
+                    <tr><th>Due Date</th><th>Amount Due</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    {% for entry in schedule %}
+                    <tr>
+                        <td class="mono">{{ entry.due_date|date:"d M Y" }}</td>
+                        <td class="mono">KES {{ entry.amount_due|floatformat:2 }}</td>
+                        <td><span class="badge badge-{{ entry.status }}">{{ entry.get_status_display }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="subtitle">No premium schedule entries yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3>Claims</h3>
+            {% if claims %}
+            <table class="section-table">
+                <thead>
+                    <tr><th>Date Filed</th><th>Amount Claimed</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    {% for claim in claims %}
+                    <tr>
+                        <td class="mono">{{ claim.date_filed|date:"d M Y" }}</td>
+                        <td class="mono">KES {{ claim.amount_claimed|floatformat:2 }}</td>
+                        <td><span class="badge badge-lapsed">{{ claim.get_current_status_display }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="subtitle">No claims filed on this policy.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div>
+        <div class="card">
+            <h3>Policy Summary</h3>
+            <div class="summary-row"><span class="label">Status</span>
+                <span class="value"><span class="badge badge-{{ policy.status }}">{{ policy.get_status_display }}</span></span>
+            </div>
+            <div class="summary-row"><span class="label">Insurer</span><span class="value">{{ policy.insurer.name }}</span></div>
+            <div class="summary-row"><span class="label">Coverage</span><span class="value mono">KES {{ policy.coverage_amount|floatformat:2 }}</span></div>
+            <div class="summary-row"><span class="label">Premium</span><span class="value mono">KES {{ policy.premium_amount|floatformat:2 }} / {{ policy.get_premium_frequency_display }}</span></div>
+            <div class="summary-row"><span class="label">Start Date</span><span class="value mono">{{ policy.start_date|date:"d M Y" }}</span></div>
+            <div class="summary-row"><span class="label">Expiry Date</span><span class="value mono">{{ policy.expiry_date|date:"d M Y" }}</span></div>
+        </div>
+
+        <div class="card">
+            <h3>Beneficiaries</h3>
+            {% if beneficiaries %}
+            {% for b in beneficiaries %}
+            <div class="summary-row">
+                <span class="label">{{ b.full_name }}</span>
+                <span class="value">{{ b.percentage_share }}%</span>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="subtitle">No beneficiaries listed.</p>
+            {% endif %}
+        </div>
+
+        {% if policy.notes %}
+        <div class="card">
+            <h3>Notes</h3>
+            <p>{{ policy.notes }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
