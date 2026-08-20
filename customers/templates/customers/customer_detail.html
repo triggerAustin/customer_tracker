@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ customer.full_name }} · Customer Tracker{% endblock %}
+{% block nav_customers %}active{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'customers:customer_list' %}">Customers</a> / {{ customer.full_name }}
+</div>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+</ul>
+{% endif %}
+
+<div class="page-header">
+    <div>
+        <h2>{{ customer.full_name }}</h2>
+        <div class="subtitle">Customer since {{ customer.date_registered|date:"d M Y" }}</div>
+    </div>
+    <a href="{% url 'customers:customer_edit' customer.pk %}" class="btn btn-secondary">Edit Customer</a>
+</div>
+
+<div class="detail-grid">
+    <div>
+        <div class="card">
+            <h3>Policies</h3>
+            {% if policies %}
+            <table class="section-table">
+                <thead>
+                    <tr><th>Policy #</th><th>Type</th><th>Insurer</th><th>Status</th><th>Expiry</th></tr>
+                </thead>
+                <tbody>
+                    {% for policy in policies %}
+                    <tr onclick="window.location='{% url "policies:policy_detail" policy.pk %}'" style="cursor: pointer;">
+                        <td class="mono">{{ policy.policy_number }}</td>
+                        <td>{{ policy.policy_type.name }}</td>
+                        <td>{{ policy.insurer.name }}</td>
+                        <td><span class="badge badge-{{ policy.status }}">{{ policy.get_status_display }}</span></td>
+                        <td class="mono">{{ policy.expiry_date|date:"d M Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="subtitle">No policies on file for this customer yet.</p>
+            {% endif %}
+            <div style="margin-top: 14px;">
+                <a href="{% url 'policies:policy_create' %}" class="btn btn-secondary btn-sm">+ Add Policy</a>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card">
+            <h3>Contact Details</h3>
+            <div class="summary-row"><span class="label">Phone</span><span class="value mono">{{ customer.phone_number }}</span></div>
+            <div class="summary-row"><span class="label">Email</span><span class="value">{{ customer.email|default:"—" }}</span></div>
+            <div class="summary-row"><span class="label">Address</span><span class="value">{{ customer.physical_address|default:"—" }}</span></div>
+            <div class="summary-row"><span class="label">National ID</span><span class="value mono">{{ customer.national_id_number }}</span></div>
+            <div class="summary-row"><span class="label">KRA PIN</span><span class="value mono">{{ customer.kra_pin|default:"—" }}</span></div>
+        </div>
+
+        {% if customer.notes %}
+        <div class="card">
+            <h3>Notes</h3>
+            <p>{{ customer.notes }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

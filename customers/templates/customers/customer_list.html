@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Customers · Customer Tracker{% endblock %}
+{% block nav_customers %}active{% endblock %}
+
+{% block content %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+</ul>
+{% endif %}
+
+<div class="page-header">
+    <div>
+        <h2>Customers</h2>
+        <div class="subtitle">{{ customers|length }} customer{{ customers|length|pluralize }} on file</div>
+    </div>
+    <a href="{% url 'customers:customer_create' %}" class="btn btn-primary">+ New Customer</a>
+</div>
+
+<div class="toolbar">
+    <input type="search" placeholder="Search by name, ID, or phone&hellip;" aria-label="Search customers">
+</div>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>National ID</th>
+                <th>Registered</th>
+                <th>Policies</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr onclick="window.location='{% url "customers:customer_detail" customer.pk %}'" style="cursor: pointer;">
+                <td class="customer-name">{{ customer.full_name }}</td>
+                <td class="mono">{{ customer.phone_number }}</td>
+                <td>{{ customer.email|default:"—" }}</td>
+                <td class="mono">{{ customer.national_id_number }}</td>
+                <td class="mono">{{ customer.date_registered|date:"d M Y" }}</td>
+                <td>{{ customer.policies.count }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <strong>No customers yet</strong>
+                        Add your first customer to start tracking their policies.
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

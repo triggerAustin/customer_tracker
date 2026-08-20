@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "edit" %}Edit {{ customer.full_name }}{% else %}New Customer{% endif %} · Customer Tracker{% endblock %}
+{% block nav_customers %}active{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'customers:customer_list' %}">Customers</a>
+    {% if mode == "edit" %} / {{ customer.full_name }}{% endif %} / {% if mode == "edit" %}Edit{% else %}New{% endif %}
+</div>
+
+<div class="page-header">
+    <h2>{% if mode == "edit" %}Edit Customer{% else %}New Customer{% endif %}</h2>
+</div>
+
+<div class="form-card">
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="form-grid">
+            {% for field in form %}
+            <div class="field {% if field.name == 'physical_address' or field.name == 'notes' %}full{% endif %}">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <ul class="errorlist">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    {% if mode == "edit" %}Save Changes{% else %}Create Customer{% endif %}
+                </button>
+                <a href="{% if mode == 'edit' %}{% url 'customers:customer_detail' customer.pk %}{% else %}{% url 'customers:customer_list' %}{% endif %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

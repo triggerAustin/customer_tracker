@@ -17,8 +17,8 @@
         <aside class="sidebar">
             <span class="sidebar-brand">Mufasa &middot; Tracker</span>
             <nav class="sidebar-nav">
+                <a href="{% url 'customers:customer_list' %}" class="{% block nav_customers %}{% endblock %}">Customers</a>
                 <a href="{% url 'policies:policy_list' %}" class="{% block nav_policies %}{% endblock %}">Policies</a>
-                <a href="#">Customers</a>
                 <a href="#">Claims</a>
             </nav>
         </aside>
